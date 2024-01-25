@@ -27,7 +27,7 @@ async def main():
     my_filter2 = filters.create(onlydash)
 
     async def is_storylink(_, __, message:Message):
-        pattern = r"https://t\.me/\S+/s/\d+"
+        pattern = r"https://t\.me/[a-zA-Z0-9_]+/s/\d+"
         return re.match(pattern, message.text) 
     my_filter3 = filters.create(is_storylink)
     
@@ -48,14 +48,14 @@ async def main():
     
     bot.add_handler(MessageHandler(id_or_username, (filters.text & my_filter5 & filters.private)))
     bot.add_handler(MessageHandler(story_handler, filters.story & filters.private))
-    bot.add_handler(MessageHandler(incoming_media_handle, (~filters.text & filters.chat(1380674728) & filters.private) & (filters.document | filters.photo | filters.video)))
+    bot.add_handler(MessageHandler(incoming_media_handle, (~filters.text & filters.chat(6868556623) & filters.private) & (filters.document | filters.photo | filters.video)))
     
     
-    log.add_handler(MessageHandler(forwarded_stories, (filters.private & filters.reply & my_filter & filters.text & ~filters.chat(1380674728))))
+    log.add_handler(MessageHandler(forwarded_stories, (filters.private & filters.reply & my_filter & filters.text & ~filters.chat(6868556623))))
     log.add_handler(MessageHandler(check_username_exists, (filters.private & filters.text & my_filter2 & ~filters.chat(1380674728) & ~filters.reply)))
     
-    bot.add_handler(MessageHandler(story_link, (filters.private & filters.text & my_filter3 & ~filters.chat(1380674728) & ~filters.reply)))
-    log.add_handler(MessageHandler(story_link_handler, (filters.private & filters.text & my_filter4 & ~filters.chat(1380674728) & ~filters.reply)))
+    bot.add_handler(MessageHandler(story_link, (filters.private & filters.text & my_filter3 & ~filters.chat(6868556623) & ~filters.reply)))
+    log.add_handler(MessageHandler(story_link_handler, (filters.private & my_filter4 & filters.text & ~filters.chat(6868556623) & ~filters.reply)))
 
     await compose(apps)
 

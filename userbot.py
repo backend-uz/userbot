@@ -3,7 +3,7 @@ from pyrogram.types import Story, Message
 import re, json, os, shutil, random
 from time import sleep
 
-log = Client("log", api_id='2703583', api_hash='2d4d9b6687e180b29daafe9b6d473fff')
+log = Client("log", api_id='28864563', api_hash='279e21383d2073b78c9428200f5d067a')
 
 
 # medianing nomiga qo'shiladigan random 4 xonali beliglar.
@@ -24,129 +24,105 @@ async def forwarded_stories(client, message):
   handle_story = await client.get_messages(6721412346, story_message_id)
   
   story = handle_story.story
-  owner_fname = story.from_user.first_name
-  media_type = story.media.value
-  posted_time = story.date
-  expired_time = story.expire_date
-  edited = story.edited
-  caption = story.caption
-  posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
-  expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
-  if media_type == 'video':
-    rndm = generatded_random()
-    file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
-    await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
-    
-  elif media_type == 'photo':
-    rndm = generatded_random()
-    file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
-    await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+  if story.media:
+    owner_fname = story.from_user.first_name
+    media_type = story.media.value
+    posted_time = story.date
+    expired_time = story.expire_date
+    edited = story.edited
+    caption = story.caption
+    posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
+    expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
+    if media_type == 'video':
+      rndm = generatded_random()
+      file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
+      await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+      
+    elif media_type == 'photo':
+      rndm = generatded_random()
+      file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
+      await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+    else:
+      await message.reply_text('tg_error')
   sleep(5)
   shutil.rmtree(f'./{waiter}')
-  
-  
-  #---text for sending user
-  # info_text =f"🕗 **Joylangan vaqt:** {posted_time}\n🗑 **Tugash vaqti:** {expired_time}\n✍️ **Tahrir:** {edited}\n📝 **Izoh:** {caption} "
-  # rndm = generatded_random()
-  # if '.VIDEO' in str(story_type):
-  #   await message.story.download(f'./{user_id}/StoryNinja_bot-{rndm}.mp4')
-  # elif '.PHOTO' in str(story_type):
-  #   await message.story.download(f'./{user_id}/StoryNinja_bot-{rndm}.jpg')
-  # for f in os.listdir(f'./{user_id}'):
-  #   await message.reply_document(os.path.join(f'./{user_id}', f), caption=info_text, parse_mode=enums.ParseMode.MARKDOWN, quote=True)
-  # shutil.rmtree(f'./{user_id}')
-    
-    
     
 # link bilan yuklash
-@log.on_message(filters.text & filters.private & ~filters.chat(1380674728) & ~filters.reply)
+@log.on_message(filters.text & filters.private & ~filters.chat(6868556623) & ~filters.reply)
 async def story_link_handler(client:Client, message:Message):
   txt = message.text.split('-')
   waiter = txt[0]
   target = txt[1]
-  print(target)
   match = re.match(r'https://t\.me/(\S+?)/s/(\d+)', target)
   username = match.group(1)
   story_id = match.group(2)
   stories = await client.get_stories(username, [int(story_id)])
   if stories == []:
-    return {"link_error"}
+    await message.reply_text('link_error')
   else:
     for story in stories:
-      owner_fname = story.from_user.first_name
-      media_type = story.media.value
-      posted_time = story.date
-      expired_time = story.expire_date
-      edited = story.edited
-      caption = story.caption
-      posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
-      expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
-      rndm = generatded_random()
-      if media_type == 'video':
+      if story.media:
+        owner_fname = story.from_user.first_name
+        media_type = story.media.value
+        posted_time = story.date
+        expired_time = story.expire_date
+        edited = story.edited
+        caption = story.caption
+        posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
+        expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
         rndm = generatded_random()
-        file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
-        await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
-        
-      elif media_type == 'photo':
-        rndm = generatded_random()
-        file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
-        await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
-
+        if media_type == 'video':
+          rndm = generatded_random()
+          file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
+          await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+          
+        elif media_type == 'photo':
+          rndm = generatded_random()
+          file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
+          await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+      else:
+        await message.reply_text('tg_error')
       sleep(5)
       shutil.rmtree(f'{waiter}')
 
-# @log.on_message(filters.chat(6721412346) & filters.text)
-# async def check_username_exists(client:Client, message:Message):
-#     async for story in client.get_chat_stories(id):
-#           media_type = story.media.value
-#           posted_time = story.date
-#           expired_time = story.expire_date
-#           edited = story.edited
-#           caption = story.caption
-#           posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
-#           expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
-#           if media_type == 'video':
-#             rndm = generatded_random()
-#             file_path = await story.download(f'./{chat_id}/StoryNinja_bot-{rndm}.mp4')
-  
-  
-# async def forbot(chat_id, id):
-  
 
 async def onlydash(_, __, text):
   if '-' in text:
     return True
   else:
     return False
-
 my_filter = filters.create(onlydash)
 
 #---with user ID or username
-@log.on_message(my_filter, ~filters.chat(1380674728) & filters.chat(6721412346) & filters.text)
+@log.on_message(my_filter, ~filters.chat(6868556623) & filters.chat(6721412346) & filters.text)
 async def check_username_exists(client:Client, message:Message):
     txt = message.text.split('-')
     waiter = txt[0]
     target = txt[1]
-
+    # error_tg = 0
     try:
         async for story in client.get_chat_stories(target):
-          media_type = story.media.value
-          owner_fname = story.from_user.first_name
-          posted_time = story.date
-          expired_time = story.expire_date
-          edited = story.edited
-          caption = story.caption
-          posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
-          expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
-          if media_type == 'video':
-            rndm = generatded_random()
-            file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
-            await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
-            
-          elif media_type == 'photo':
-            rndm = generatded_random()
-            file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
-            await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+          if story.media:
+            media_type = story.media.value
+            owner_fname = story.from_user.first_name
+            posted_time = story.date
+            expired_time = story.expire_date
+            edited = story.edited
+            caption = story.caption
+            posted_time = str(posted_time).replace("-", ".").replace(" ", " - ")[:-3]
+            expired_time = str(expired_time).replace("-", ".").replace(" ", " - ")[:-3]
+            if media_type == 'video':
+              rndm = generatded_random()
+              file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.mp4')
+              await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+              
+            elif media_type == 'photo':
+              rndm = generatded_random()
+              file_path = await story.download(f'./{waiter}/StoryNinja_bot-{rndm}.jpg')
+              await message.reply_document(file_path, caption=f"{owner_fname}\n{posted_time}\n{expired_time}\n{edited}\n{caption}")
+          else:
+            continue
+          #   await message.reply_text('tg_error')
         shutil.rmtree(f'./{waiter}')
           
     except errors.UsernameInvalid:
@@ -155,3 +131,4 @@ async def check_username_exists(client:Client, message:Message):
       print('username xato')
     except errors.PeerIdInvalid:
       print('id xato')
+    
