@@ -133,6 +133,13 @@ async def incoming_media_handle(client:Client, message:Message):
 @bot.on_message(filters.story &filters.private)
 async def story_handler(client: Client, message:Message):
     from_id = message.from_user.id
+    user = session.query(User).filter_by(chat_id=from_id).first()
+    if user.lang == 'uzb':
+        await message.reply_text("Iltimos kuting! Yuklanmoqda 📥")
+    elif user.lang == 'eng':
+        await message.reply_text("Please wait! Downloading 📥")
+    elif user.lang == 'rus':
+        await message.reply_text("Пожалуйста, подождите! Загрузка 📥")
     newmsg_id = await client.forward_messages(chat_id=6868556623, from_chat_id=from_id, message_ids=message.id)
     await newmsg_id.reply(text=from_id, quote=True)
     
@@ -153,8 +160,14 @@ async def id_or_username(client, message):
                 usr = await client.get_users([msg])
 
             if usr[0].is_stories_unavailable == False:
+                if user.lang == 'uzb':
+                    await message.reply_text("Iltimos kuting! Yuklanmoqda 📥")
+                elif user.lang == 'eng':
+                    await message.reply_text("Please wait! Downloading 📥")
+                elif user.lang == 'rus':
+                    await message.reply_text("Пожалуйста, подождите! Загрузка 📥")
                 await client.send_message(6868556623, text=f'{chat_id}-{msg}')
-        
+                
         except errors.UsernameInvalid:
             if user.lang == 'uzb':
                 await message.reply_text(erroruzb)
