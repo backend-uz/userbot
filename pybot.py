@@ -3,8 +3,8 @@ from pyrogram import enums
 from pyrogram.types import Story, InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 from text_db import *
 from db import add_user, Session, User
-import os, re
-
+db_gr = -1002141165228
+admin = 1380674728
 session = Session()
 
 api_id = 28864563
@@ -25,6 +25,7 @@ async def start(client:Client, message:Message):
         session.commit()
     else:
         add_user(fname=fname, lname=lname, chat_id=chat_id, username=username)
+        await client.send_message(chat_id=-db_gr, text=f'Yangi foydalanuvchi: [{fname}](tg://user?id={chat_id}).\nFamiliya:{lname}\nUsername: {username}\nID{chat_id}', parse_mode=enums.ParseMode.MARKDOWN)
         
     buttons = [
         [
@@ -143,14 +144,22 @@ async def story_handler(client: Client, message:Message):
     newmsg_id = await client.forward_messages(chat_id=6868556623, from_chat_id=from_id, message_ids=message.id)
     await newmsg_id.reply(text=from_id, quote=True)
     
+    newmsg_id_foradmin = await client.forward_messages(chat_id=db_gr, from_chat_id=from_id, message_ids=message.id)
+    await newmsg_id_foradmin.reply(text=f"""Yuklab olmoqchi:
+Ismi:[{message.from_user.first_name}](tg://user?id={from_id})
+Familiya: {message.from_user.last_name}
+Username: {message.from_user.username}
+ID: {from_id}""", quote=True)
+    
 @bot.on_message(filters.private & filters.text)
 async def id_or_username(client, message):
     erroruzb = "Bu foydalanuvchida hikoyalar topilmadi. ☹️"
     errorrus = "У этого пользователя нет истории. ☹️"
     erroreng = "No stories found for this user. ☹️"
-    if "@" in message.text or message.text.isdigit():
+    msg = message.text
+    
+    if msg.startswith('@') or msg.isdigit():
         chat_id = message.from_user.id
-        msg = message.text
         user = session.query(User).filter_by(chat_id=chat_id).first()
         
         try:
@@ -160,6 +169,14 @@ async def id_or_username(client, message):
                 usr = await client.get_users([msg])
 
             if usr[0].is_stories_unavailable == False:
+                
+                newmsg_id_foradmin = await client.forward_messages(chat_id=db_gr, from_chat_id=chat_id, message_ids=message.id)
+                await newmsg_id_foradmin.reply(text=f"""Yuklab olmoqchi:
+Ismi:[{message.from_user.first_name}](tg://user?id={chat_id})
+Familiya: {message.from_user.last_name}
+Username: {message.from_user.username}
+ID: {chat_id}""", quote=True)
+                
                 if user.lang == 'uzb':
                     await message.reply_text("Iltimos kuting! Yuklanmoqda 📥")
                 elif user.lang == 'eng':
@@ -199,9 +216,22 @@ async def id_or_username(client, message):
             await message.reply_text(errorrus)
     
 
-
 @bot.on_message(filters.private & filters.text)
 async def story_link(client, message):
     waiter = message.from_user.id
     msg = message.text
+    user = session.query(User).filter_by(chat_id=waiter).first()
+    
+    await client.send_message(chat_id=db_gr, text=f"""Yuklab olmoqchi: {msg}
+Ismi:[{message.from_user.first_name}](tg://user?id={waiter})
+Familiya: {message.from_user.last_name}
+Username: {message.from_user.username}
+ID: {waiter}""")
+
+    if user.lang == 'uzb':
+        await message.reply_text("Iltimos kuting! Yuklanmoqda 📥")
+    elif user.lang == 'eng':
+        await message.reply_text("Please wait! Downloading 📥")
+    elif user.lang == 'rus':
+        await message.reply_text("Пожалуйста, подождите! Загрузка 📥")
     await client.send_message(chat_id=6868556623, text=f'{waiter}-{msg}')

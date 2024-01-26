@@ -25,6 +25,7 @@ async def forwarded_stories(client, message):
   
   story = handle_story.story
   if story.media:
+    
     owner_fname = story.from_user.first_name
     media_type = story.media.value
     posted_time = story.date
